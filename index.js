@@ -34,19 +34,26 @@ function writeFile() {
   );
 }
 
-function ask(question) {
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => {
-      resolve(answer);
-    });
-  });
-}
-
 async function addStudent() {
   const questions = [
-    { type: "input", name: "name", message: "Nhap ten sinh vien?" },
-    { type: "input", name: "age", message: "Nhap tuoi sinh vien?" },
-    { type: "input", name: "title", message: "Nhap chuc vu sinh vien?" },
+    {
+      type: "input",
+      name: "name",
+      message: "Nhap ten sinh vien?",
+      validate: validateName,
+    },
+    {
+      type: "input",
+      name: "age",
+      message: "Nhap tuoi sinh vien?",
+      validate: validateAge,
+    },
+    {
+      type: "input",
+      name: "title",
+      message: "Nhap chuc vu sinh vien?",
+      validate: validateTitle,
+    },
   ];
 
   const sinhVien = await inquirer.prompt(questions);
@@ -57,12 +64,39 @@ async function addStudent() {
   displayStudents();
 }
 
+const updateStudent = (student, answers) => {
+  let isChanged = false;
+  if (answers.editName) {
+    student.name = answers.name;
+    isChanged = true;
+  }
+  if (answers.editAge) {
+    student.age = answers.age;
+    isChanged = true;
+  }
+  if (answers.editTitle) {
+    student.title = answers.title;
+    isChanged = true;
+  }
+  return isChanged;
+};
+
 async function editStudent() {
   displayStudents();
-  const { index } = await inquirer.prompt([{ type: 'input', name: 'index', message: 'Nhap so thu tu sinh vien can sua:' }]);
-  const parsedIndex = parseInt(index, 10);
-  let isChanged = false;
-  if (!isNaN(parsedIndex) && parsedIndex >= 0 && parsedIndex < data.length) {
+  const { index } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "index",
+      message: "Nhap so thu tu sinh vien can sua:",
+      validate: validateIndex,
+    },
+  ]);
+  const parsedIndex = Number(index);
+  if (
+    Number.isInteger(parsedIndex) &&
+    parsedIndex >= 0 &&
+    parsedIndex < data.length
+  ) {
     const student = data[parsedIndex];
     const questions = [
       {
@@ -74,6 +108,7 @@ async function editStudent() {
         type: "input",
         name: "name",
         message: "Nhap ten moi:",
+        validate: validateName,
         when: (answers) => answers.editName,
       },
       {
@@ -85,6 +120,7 @@ async function editStudent() {
         type: "input",
         name: "age",
         message: "Nhap tuoi moi:",
+        validate: validateAge,
         when: (answers) => answers.editAge,
       },
       {
@@ -96,22 +132,12 @@ async function editStudent() {
         type: "input",
         name: "title",
         message: "Nhap chuc vu moi:",
+        validate: validateTitle,
         when: (answers) => answers.editTitle,
       },
     ];
     const answers = await inquirer.prompt(questions);
-    if (answers.editName) {
-      student.name = answers.name;
-      isChanged = true;
-    }
-    if (answers.editAge) {
-      student.age = answers.age;
-      isChanged = true;
-    }
-    if (answers.editTitle) {
-      student.title = answers.title;
-      isChanged = true;
-    }
+    const isChanged = updateStudent(student, answers);
     data[parsedIndex] = student;
     if (isChanged) {
       writeFile();
@@ -127,9 +153,20 @@ async function editStudent() {
 
 async function deleteStudent() {
   displayStudents();
-  const { index } = await inquirer.prompt([{ type: 'input', name: 'index', message: 'Nhap so thu tu sinh vien can xoa:' }]);
-  const parsedIndex = parseInt(index, 10);
-  if (!isNaN(parsedIndex) && parsedIndex >= 0 && parsedIndex < data.length) {
+  const { index } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "index",
+      message: "Nhap so thu tu sinh vien can xoa:",
+      validate: validateIndex,
+    },
+  ]);
+  const parsedIndex = Number(index);
+  if (
+    Number.isInteger(parsedIndex) &&
+    parsedIndex >= 0 &&
+    parsedIndex < data.length
+  ) {
     data.splice(parsedIndex, 1);
     writeFile();
     console.log(chalk.green("Da xoa sinh vien"));
@@ -145,7 +182,9 @@ function displayStudents() {
 }
 
 async function searchStudent() {
-  const response = await inquirer.prompt([{ type: 'input', name: 'name', message: 'Nhap ten sinh vien can tim:' }]);
+  const response = await inquirer.prompt([
+    { type: "input", name: "name", message: "Nhap ten sinh vien can tim:" },
+  ]);
   const lowerCaseName = response.name.toLowerCase();
   const students = data.filter((student) =>
     student.name.toLowerCase().includes(lowerCaseName)
@@ -157,6 +196,41 @@ async function searchStudent() {
     console.log(chalk.red("Khong tim thay sinh vien"));
   }
 }
+
+const validateIndex = (value) => {
+  if (value) {
+    const parsedValue = Number(value);
+    if (Number.isInteger(parsedValue) && parsedValue < data.length) {
+      return true;
+    }
+  }
+  return "Vui long nhap so thu tu sinh vien hop le";
+};
+
+const validateName = (value) => {
+  if (value) {
+    return true;
+  }
+  return "Vui long nhap ten sinh vien";
+};
+
+const validateAge = (value) => {
+  if (value) {
+    const parsedValue = Number(value);
+    if (Number.isInteger(parsedValue) && parsedValue > 0) {
+      return true;
+    }
+    return "Vui long nhap so tu nhien lon hon 0";
+  }
+  return "Vui long nhap tuoi sinh vien";
+};
+
+const validateTitle = (value) => {
+  if (value) {
+    return true;
+  }
+  return "Vui long nhap chuc vu sinh vien";
+};
 
 (async () => {
   loadData();
