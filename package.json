@@ -1,6 +1,14 @@
 {
+  "name": "nodejslibrary",
+  "version": "1.0.0",
+  "description": "NodeJsLibrary",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
   "type": "module",
   "dependencies": {
-    "chalk": "^5.3.0"
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.12"
   }
 }

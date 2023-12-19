@@ -3,6 +3,7 @@ import path from "path";
 import readline from "readline";
 import { stdin as input, stdout as output } from "process";
 import chalk from "chalk";
+import inquirer from "inquirer";
 
 const rl = readline.createInterface({ input, output });
 
@@ -42,46 +43,80 @@ function ask(question) {
 }
 
 async function addStudent() {
-  const sinhVien = {};
+  const questions = [
+    { type: "input", name: "name", message: "Nhap ten sinh vien?" },
+    { type: "input", name: "age", message: "Nhap tuoi sinh vien?" },
+    { type: "input", name: "title", message: "Nhap chuc vu sinh vien?" },
+  ];
 
-  sinhVien.name = await ask("Nhap ten sinh vien? ");
-  sinhVien.age = await ask("Nhap tuoi sinh vien? ");
-  sinhVien.title = await ask("Nhap chuc vu sinh vien? ");
+  const sinhVien = await inquirer.prompt(questions);
 
   data.push(sinhVien);
   writeFile();
-  console.log("=".repeat(100));
   console.log(chalk.green("Da them sinh vien"));
   displayStudents();
-  console.log("=".repeat(100));
 }
 
 async function editStudent() {
   displayStudents();
-  const index = await ask("Nhap so thu tu sinh vien can sua: ");
+  const { index } = await inquirer.prompt([{ type: 'input', name: 'index', message: 'Nhap so thu tu sinh vien can sua:' }]);
   const parsedIndex = parseInt(index, 10);
   let isChanged = false;
   if (!isNaN(parsedIndex) && parsedIndex >= 0 && parsedIndex < data.length) {
     const student = data[parsedIndex];
-    if ((await ask("Ban co muon sua ten sinh vien? (y/n) ")) === "y") {
-      student.name = await ask("Nhap ten moi: ");
+    const questions = [
+      {
+        type: "confirm",
+        name: "editName",
+        message: "Ban co muon sua ten sinh vien?",
+      },
+      {
+        type: "input",
+        name: "name",
+        message: "Nhap ten moi:",
+        when: (answers) => answers.editName,
+      },
+      {
+        type: "confirm",
+        name: "editAge",
+        message: "Ban co muon sua tuoi sinh vien?",
+      },
+      {
+        type: "input",
+        name: "age",
+        message: "Nhap tuoi moi:",
+        when: (answers) => answers.editAge,
+      },
+      {
+        type: "confirm",
+        name: "editTitle",
+        message: "Ban co muon sua chuc vu sinh vien?",
+      },
+      {
+        type: "input",
+        name: "title",
+        message: "Nhap chuc vu moi:",
+        when: (answers) => answers.editTitle,
+      },
+    ];
+    const answers = await inquirer.prompt(questions);
+    if (answers.editName) {
+      student.name = answers.name;
       isChanged = true;
     }
-    if ((await ask("Ban co muon sua tuoi sinh vien? (y/n) ")) === "y") {
-      student.age = await ask("Nhap tuoi moi: ");
+    if (answers.editAge) {
+      student.age = answers.age;
       isChanged = true;
     }
-    if ((await ask("Ban co muon sua chuc vu sinh vien? (y/n) ")) === "y") {
-      student.title = await ask("Nhap chuc vu moi: ");
+    if (answers.editTitle) {
+      student.title = answers.title;
       isChanged = true;
     }
     data[parsedIndex] = student;
     if (isChanged) {
       writeFile();
-      console.log("=".repeat(100));
       console.log(chalk.green("Da sua thong tin sinh vien"));
       console.table(data[parsedIndex]);
-      console.log("=".repeat(100));
     } else {
       console.log(chalk.yellow("Khong co thong tin nao duoc thay doi"));
     }
@@ -92,7 +127,7 @@ async function editStudent() {
 
 async function deleteStudent() {
   displayStudents();
-  const index = await ask("Nhap so thu tu sinh vien can xoa: ");
+  const { index } = await inquirer.prompt([{ type: 'input', name: 'index', message: 'Nhap so thu tu sinh vien can xoa:' }]);
   const parsedIndex = parseInt(index, 10);
   if (!isNaN(parsedIndex) && parsedIndex >= 0 && parsedIndex < data.length) {
     data.splice(parsedIndex, 1);
@@ -105,23 +140,19 @@ async function deleteStudent() {
 }
 
 function displayStudents() {
-  console.log("=".repeat(100));
   console.log(chalk.blue("Danh sach sinh vien:"));
   console.table(data);
-  console.log("=".repeat(100));
 }
 
 async function searchStudent() {
-  const name = await ask("Nhap ten sinh vien can tim: ");
-  const lowerCaseName = name.toLowerCase();
+  const response = await inquirer.prompt([{ type: 'input', name: 'name', message: 'Nhap ten sinh vien can tim:' }]);
+  const lowerCaseName = response.name.toLowerCase();
   const students = data.filter((student) =>
     student.name.toLowerCase().includes(lowerCaseName)
   );
   if (students.length > 0) {
-    console.log("=".repeat(100));
     console.log(chalk.blue("Danh sach sinh vien da tim kiem:"));
     console.table(students);
-    console.log("=".repeat(100));
   } else {
     console.log(chalk.red("Khong tim thay sinh vien"));
   }
@@ -131,33 +162,39 @@ async function searchStudent() {
   loadData();
   let doContinue = true;
   while (doContinue) {
-    const action = await ask(
-      `Ban muon lam gi?  
-  1. Hien thi danh sach sinh vien
-  2. Tim kiem sinh vien
-  3. Them sinh vien
-  4. Sua sinh vien
-  5. Xoa sinh vien
-  6. Thoat chuong trinh
-Lua chon: `
-    );
+    const questions = [
+      {
+        type: "list",
+        name: "action",
+        message: "Ban muon lam gi?",
+        choices: [
+          "Hien thi danh sach sinh vien",
+          "Tim kiem sinh vien",
+          "Them sinh vien",
+          "Sua sinh vien",
+          "Xoa sinh vien",
+          "Thoat chuong trinh",
+        ],
+      },
+    ];
+    const { action } = await inquirer.prompt(questions);
     switch (action) {
-      case "1":
+      case "Hien thi danh sach sinh vien":
         displayStudents();
         break;
-      case "2":
+      case "Tim kiem sinh vien":
         await searchStudent();
         break;
-      case "3":
+      case "Them sinh vien":
         await addStudent();
         break;
-      case "4":
+      case "Sua sinh vien":
         await editStudent();
         break;
-      case "5":
+      case "Xoa sinh vien":
         await deleteStudent();
         break;
-      case "6":
+      case "Thoat chuong trinh":
         doContinue = false;
         break;
       default:
