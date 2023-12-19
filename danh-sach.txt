@@ -1,0 +1,6 @@
+Nguyen Van A,20,Developer
+Nguyen Van B,21,Developer
+Nguyen Van C,22,Developer
+Nguyen Duc Truyen,21,Sinh Vien
+Nguyen Van D,30,Sinh vien
+Minh Huy,12,Sinh vien ngheo
