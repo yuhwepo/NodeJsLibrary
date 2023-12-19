@@ -91,63 +91,54 @@ async function editStudent() {
       validate: validateIndex,
     },
   ]);
-  const parsedIndex = Number(index);
-  if (
-    Number.isInteger(parsedIndex) &&
-    parsedIndex >= 0 &&
-    parsedIndex < data.length
-  ) {
-    const student = data[parsedIndex];
-    const questions = [
-      {
-        type: "confirm",
-        name: "editName",
-        message: "Ban co muon sua ten sinh vien?",
-      },
-      {
-        type: "input",
-        name: "name",
-        message: "Nhap ten moi:",
-        validate: validateName,
-        when: (answers) => answers.editName,
-      },
-      {
-        type: "confirm",
-        name: "editAge",
-        message: "Ban co muon sua tuoi sinh vien?",
-      },
-      {
-        type: "input",
-        name: "age",
-        message: "Nhap tuoi moi:",
-        validate: validateAge,
-        when: (answers) => answers.editAge,
-      },
-      {
-        type: "confirm",
-        name: "editTitle",
-        message: "Ban co muon sua chuc vu sinh vien?",
-      },
-      {
-        type: "input",
-        name: "title",
-        message: "Nhap chuc vu moi:",
-        validate: validateTitle,
-        when: (answers) => answers.editTitle,
-      },
-    ];
-    const answers = await inquirer.prompt(questions);
-    const isChanged = updateStudent(student, answers);
-    data[parsedIndex] = student;
-    if (isChanged) {
-      writeFile();
-      console.log(chalk.green("Da sua thong tin sinh vien"));
-      console.table(data[parsedIndex]);
-    } else {
-      console.log(chalk.yellow("Khong co thong tin nao duoc thay doi"));
-    }
+  const student = data[index];
+  const questions = [
+    {
+      type: "confirm",
+      name: "editName",
+      message: "Ban co muon sua ten sinh vien?",
+    },
+    {
+      type: "input",
+      name: "name",
+      message: "Nhap ten moi:",
+      validate: validateName,
+      when: (answers) => answers.editName,
+    },
+    {
+      type: "confirm",
+      name: "editAge",
+      message: "Ban co muon sua tuoi sinh vien?",
+    },
+    {
+      type: "input",
+      name: "age",
+      message: "Nhap tuoi moi:",
+      validate: validateAge,
+      when: (answers) => answers.editAge,
+    },
+    {
+      type: "confirm",
+      name: "editTitle",
+      message: "Ban co muon sua chuc vu sinh vien?",
+    },
+    {
+      type: "input",
+      name: "title",
+      message: "Nhap chuc vu moi:",
+      validate: validateTitle,
+      when: (answers) => answers.editTitle,
+    },
+  ];
+  const answers = await inquirer.prompt(questions);
+  const isChanged = updateStudent(student, answers);
+  data[index] = student;
+  if (isChanged) {
+    writeFile();
+    console.log(chalk.green("Da sua thong tin sinh vien"));
+    console.table(data[index]);
   } else {
-    console.log(chalk.red("So thu tu khong hop le"));
+    console.log(chalk.yellow("Khong co thong tin nao duoc thay doi"));
   }
 }
 
@@ -161,19 +152,10 @@ async function deleteStudent() {
       validate: validateIndex,
     },
   ]);
-  const parsedIndex = Number(index);
-  if (
-    Number.isInteger(parsedIndex) &&
-    parsedIndex >= 0 &&
-    parsedIndex < data.length
-  ) {
-    data.splice(parsedIndex, 1);
-    writeFile();
-    console.log(chalk.green("Da xoa sinh vien"));
-    displayStudents();
-  } else {
-    console.log(chalk.red("So thu tu khong hop le"));
-  }
+  data.splice(index, 1);
+  writeFile();
+  console.log(chalk.green("Da xoa sinh vien"));
+  displayStudents();
 }
 
 function displayStudents() {

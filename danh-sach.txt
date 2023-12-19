@@ -1,8 +1,7 @@
-Nguyen Van A,20,Hieu truong
+Nguyen Van Anh,20,Hieu truong
 Nguyen Van B,21,Developer
 Nguyen Van C,22,Developer
 Nguyen Duc Truyen,21,Sinh Vien
 Nguyen Van Minh Huy,22,Sinh vien ngheo
 Nguyen Tuan Kiet,20,Lop pho
 Nguyen Van Tri,10,Hoc sinh
-Nguyen Tuyet Nhi,20,Lop you
