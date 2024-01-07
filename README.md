@@ -1,11 +1,11 @@
 # NodeJs Library
 
-Follow me [Nguyen Van Minh Huy](https://fb.com/yuh.wepo) on Facebook.
+Follow me [Nguyen Van Minh Huy](https://fb.com/yuhwepo) on Facebook.
 
 ## How to start
 
 ```
-node .
+npm start
 ```
 
 ## Packages Used
