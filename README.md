@@ -1,6 +1,6 @@
 # NodeJs Library
 
-Follow me [Nguyen Van Minh Huy](https://fb.com/yuhwepo) on Facebook.
+Follow me [Nguyen Van Minh Huy](https://facebook.com/yuhwepo) on Facebook.
 
 ## How to start
 
